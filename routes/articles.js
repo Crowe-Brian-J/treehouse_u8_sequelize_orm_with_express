@@ -32,8 +32,23 @@ router.get('/new', (req, res) => {
 router.post(
   '/',
   asyncHandler(async (req, res) => {
-    const article = await Article.create(req.body)
-    res.redirect('/articles/' + article.id)
+    let article
+    try {
+      article = await Article.create(req.body)
+      res.redirect('/articles/' + article.id)
+    } catch (error) {
+      if (error.name === 'SequelizeValidationError') {
+        // Checking the error
+        article = await Article.build(req.body)
+        res.render('articles/new', {
+          article,
+          errors: error.errors,
+          title: 'New Article'
+        })
+      } else {
+        throw error // Error caught in the asyncHandler's catch block
+      }
+    }
   })
 )
 
