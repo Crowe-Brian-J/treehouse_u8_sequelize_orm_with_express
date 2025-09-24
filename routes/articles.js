@@ -41,7 +41,8 @@ router.post(
 router.get(
   '/:id/edit',
   asyncHandler(async (req, res) => {
-    res.render('articles/edit', { article: {}, title: 'Edit Article' })
+    const article = await Article.findByPk(req.params.id)
+    res.render('articles/edit', { article, title: 'Edit Article' })
   })
 )
 
@@ -58,7 +59,9 @@ router.get(
 router.post(
   '/:id/edit',
   asyncHandler(async (req, res) => {
-    res.redirect('/articles/')
+    const article = await Article.findByPk(req.params.id)
+    await article.update(req.body)
+    res.redirect('/articles/' + article.id)
   })
 )
 
